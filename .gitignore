@@ -34,3 +34,7 @@ Temporary Items
 
 target
 .idea
+
+.classpath
+.project
+.settings
