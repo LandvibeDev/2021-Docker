@@ -50,14 +50,14 @@ public class BusinessCardManagerDao {
     }
 
     public BusinessCard addBusinessCard(BusinessCard businessCard){//insert문이기 때문에 rs와 같은 결과 값을 받는 변수는 필요X
-		int insertCount = 0; //insert/update/delete의 결과를 담는 변수
+//		int insertCount = 0; //insert/update/delete의 결과를 담는 변수
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");	//드라이버 불러옴
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-		String sql = "INSERT INTO business_card (name, phone, company_name, create_date) VALUES ( ?, ? )"; //query문.
+		String sql = "INSERT INTO business_card (name, phone, company_name, create_date) VALUES ( ?, ?, ? )"; //query문.
 
 		try (Connection conn = DriverManager.getConnection(dburl, dbUser, dbpasswd); //try with resource.
 				PreparedStatement ps = conn.prepareStatement(sql)) { //conn객체로 ps객체 얻어옴.
@@ -68,7 +68,7 @@ public class BusinessCardManagerDao {
 			ps.setDate(4, (Date)businessCard.getCreateDate());
 
 			
-			insertCount = ps.executeUpdate(); //select는 excuteQeury() / insert, update, delete는 excuteUpadate().
+//			insertCount = ps.executeUpdate(); //select는 excuteQeury() / insert, update, delete는 excuteUpadate().
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
