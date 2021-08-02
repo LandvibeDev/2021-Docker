@@ -12,7 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BusinessCardManagerDao {
-	private static String dburl = "jdbc:mysql://localhost:3306/projectdb";
+	private static String driver = "com.mysql.jdbc.Driver";	
+	private static String dburl = "jdbc:mysql://localhost:3306/projectdb?useSSL=false&serverTimezone=Asia/Seoul";
 	private static String dbUser = "projectuser";
 	private static String dbpasswd = "project123!@#";
 	
@@ -20,12 +21,12 @@ public class BusinessCardManagerDao {
     	List<BusinessCard> list = new ArrayList<>();
 
 		try {
-			Class.forName("com.mysql.jdbc.Driver");	//드라이버 불러옴
+			Class.forName(driver);	//드라이버 불러옴
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 
-		String sql = "SELECT name, phone, company_name, create_date FROM business_card";
+		String sql = "SELECT * FROM business_card WHERE name like '%" + keyword + "%'";
 		try (Connection conn = DriverManager.getConnection(dburl, dbUser, dbpasswd);
 				PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -35,8 +36,9 @@ public class BusinessCardManagerDao {
 					String name = rs.getString(1); //하나씩 꺼냄
 					String phone = rs.getString("phone");
 					String companyName = rs.getString("company_name");
-//					String createDate = rs.getString("craete_date");
+					Date createDate = rs.getDate("create_date");
 					BusinessCard businessCard = new BusinessCard(name, phone, companyName);
+					businessCard.setCreateDate(createDate);
 					list.add(businessCard); // list에 반복할때마다 Role인스턴스를 생성하여 list에 추가한다.
 				}
 			} catch (Exception e) {
@@ -57,7 +59,7 @@ public class BusinessCardManagerDao {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-		String sql = "INSERT INTO business_card (name, phone, company_name, create_date) VALUES ( ?, ?, ? )"; //query문.
+		String sql = "INSERT INTO business_card (name, phone, company_name, create_date) VALUES ( ?, ?, ?, ? )"; //query문.
 
 		try (Connection conn = DriverManager.getConnection(dburl, dbUser, dbpasswd); //try with resource.
 				PreparedStatement ps = conn.prepareStatement(sql)) { //conn객체로 ps객체 얻어옴.
@@ -65,9 +67,9 @@ public class BusinessCardManagerDao {
 			ps.setString(1, businessCard.getName()); //'?'에 대한 값을 바인딩.
 			ps.setString(2, businessCard.getPhone()); //'?'에 대한 값을 바인딩.
 			ps.setString(3, businessCard.getCompanyName());
-			ps.setDate(4, (Date)businessCard.getCreateDate());
+			ps.setDate(4, new java.sql.Date(businessCard.getCreateDate().getTime()));
 
-			
+            ps.executeUpdate();
 //			insertCount = ps.executeUpdate(); //select는 excuteQeury() / insert, update, delete는 excuteUpadate().
 
 		} catch (Exception ex) {
