@@ -22,7 +22,7 @@ public class GuestbookWriteServlet extends HttpServlet {
         GuestbookDao guestbookDao = new GuestbookDao();
         guestbookDao.addGuestbook(guestbook);
 
-        response.sendRedirect("http://localhost:8080/guestbooks");
+        response.sendRedirect("/guestbooks");
     }
 
 }

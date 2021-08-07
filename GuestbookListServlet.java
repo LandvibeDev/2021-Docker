@@ -24,7 +24,7 @@ public class GuestbookListServlet extends HttpServlet {
         List<Guestbook> list = guestBookDao.getGuestbooks();
         request.setAttribute("list", list);
 
-       // RequestDispatcher rd = request.getRequestDispatcher("../../../webapp/WEB-INF/guestbook/guestbooks.jsp");
+
         RequestDispatcher requestDispatcher = getServletContext().getRequestDispatcher("/WEB-INF/guestbook/guestbooks.jsp");
         requestDispatcher.forward(request, response);
 

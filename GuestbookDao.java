@@ -13,18 +13,26 @@ public class GuestbookDao {
     private static final String dbUser = "root";
     private static final String dbpasswd = "7479";
 
+    Connection conn = null;
+    PreparedStatement ps = null;
+    ResultSet rs = null;
 
-    public List<Guestbook> getGuestbooks(){
-        List<Guestbook> list = new ArrayList<>();
-        Connection conn = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
+    public Connection GuestbookDao(){
         try {
             Class.forName("com.mysql.jdbc.Driver");
             conn = DriverManager.getConnection(dburl, dbUser, dbpasswd);
+            return conn;
+        }catch(Exception ex){
+            throw new RuntimeException("Connection Error");
+        }
+    }
+
+
+    public List<Guestbook> getGuestbooks(){
+        List<Guestbook> list = new ArrayList<>();
+        try {
             String sql = "SELECT * FROM db_schema.guestbook";
-            ps = conn.prepareStatement(sql);
+            ps = GuestbookDao().prepareStatement(sql);
 
             rs = ps.executeQuery();
 
@@ -69,15 +77,9 @@ public class GuestbookDao {
 
 
     public void addGuestbook(Guestbook guestbook){
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        String sql = "INSERT INTO db_schema.guestbook (id,name, content,regdate) VALUES (id,?,?,?)";
+        String sql = "INSERT INTO db_schema.guestbook (name, content,regdate) VALUES (?,?,?)";
 
-        try (Connection conn = DriverManager.getConnection(dburl, dbUser, dbpasswd);
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (PreparedStatement ps = GuestbookDao().prepareStatement(sql)) {
 
             ps.setString(1, guestbook.getName());
             ps.setString(2, guestbook.getContent());
@@ -86,6 +88,28 @@ public class GuestbookDao {
 
         } catch (Exception ex) {
             ex.printStackTrace();
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }
